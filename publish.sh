@@ -51,7 +51,7 @@ git push origin main
 MAVEN_VERSION=${NEW_TAG#v}
 
 echo "📦 Building, signing, and publishing v$MAVEN_VERSION to Maven Central..."
-./gradlew publish -PlibraryVersion="$MAVEN_VERSION"
+./gradlew publishAndReleaseToMavenCentral -PlibraryVersion="$MAVEN_VERSION" --no-configuration-cache
 
 # Create the Git tag
 echo "🏷️ Creating tag $NEW_TAG..."

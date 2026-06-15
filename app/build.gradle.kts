@@ -1,8 +1,9 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    id("maven-publish")
-    id("signing")
+    id("com.vanniktech.maven.publish") version "0.30.0"
 }
 
 android {
@@ -28,12 +29,6 @@ android {
     buildFeatures {
         compose = true
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 dependencies {
@@ -57,57 +52,37 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "io.github.femimarket"
-            artifactId = "android-splash"
-            version = project.findProperty("libraryVersion") as String? ?: "1.0.0"
+mavenPublishing {
+    coordinates(
+        groupId = "io.github.femimarket",
+        artifactId = "android-splash",
+        version = project.findProperty("libraryVersion") as String? ?: "1.0.0"
+    )
 
-            afterEvaluate {
-                from(components["release"])
-            }
-
-            pom {
-                name.set("AndroidSplash")
-                description.set("A premium video splash screen library for Jetpack Compose")
-                url.set("https://github.com/femimarket/AndroidSplash")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("femi")
-                        name.set("Femi")
-                        email.set("business@femi.market")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:github.com/femimarket/AndroidSplash.git")
-                    developerConnection.set("scm:git:ssh://github.com/femimarket/AndroidSplash.git")
-                    url.set("https://github.com/femimarket/AndroidSplash/tree/main")
-                }
+    pom {
+        name.set("AndroidSplash")
+        description.set("A premium video splash screen library for Jetpack Compose")
+        url.set("https://github.com/femimarket/AndroidSplash")
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/licenses/MIT")
             }
         }
-    }
-    repositories {
-        maven {
-            name = "Sonatype"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = project.findProperty("mavenCentralUsername") as String?
-                password = project.findProperty("mavenCentralPassword") as String?
+        developers {
+            developer {
+                id.set("femi")
+                name.set("Femi")
+                email.set("business@femi.market")
             }
         }
+        scm {
+            connection.set("scm:git:github.com/femimarket/AndroidSplash.git")
+            developerConnection.set("scm:git:ssh://github.com/femimarket/AndroidSplash.git")
+            url.set("https://github.com/femimarket/AndroidSplash/tree/main")
+        }
     }
-}
 
-signing {
-    val signingKey = project.findProperty("signingInMemoryKey") as String?
-    val signingPassword = project.findProperty("signingInMemoryKeyPassword") as String?
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 }
