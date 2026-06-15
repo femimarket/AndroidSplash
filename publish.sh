@@ -47,7 +47,13 @@ fi
 echo "⏳ Pushing code..."
 git push origin main
 
-# Create the Git tag for JitPack
+# Extract version without the 'v' for Maven Central
+MAVEN_VERSION=${NEW_TAG#v}
+
+echo "📦 Building, signing, and publishing v$MAVEN_VERSION to Maven Central..."
+./gradlew publish -PlibraryVersion="$MAVEN_VERSION"
+
+# Create the Git tag
 echo "🏷️ Creating tag $NEW_TAG..."
 git tag "$NEW_TAG"
 
@@ -55,4 +61,4 @@ git tag "$NEW_TAG"
 echo "⏳ Pushing tag..."
 git push origin "$NEW_TAG"
 
-echo "✅ Successfully pushed $NEW_TAG! JitPack will now build it."
+echo "✅ Successfully published v$MAVEN_VERSION to Maven Central and pushed $NEW_TAG to GitHub!"

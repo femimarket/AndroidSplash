@@ -122,8 +122,7 @@ fun Splash(onContinue: () -> Unit) {
     val exoPlayer = remember {
         if (isPreview) null else {
             ExoPlayer.Builder(context).build().apply {
-                val resId = context.resources.getIdentifier("splash_video1", "raw", context.packageName)
-                val uri = "android.resource://${context.packageName}/$resId".toUri()
+                val uri = "android.resource://${context.packageName}/${R.raw.splash_video1}".toUri()
                 setMediaItem(MediaItem.fromUri(uri))
                 repeatMode = Player.REPEAT_MODE_ALL
                 playWhenReady = true
