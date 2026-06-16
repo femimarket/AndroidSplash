@@ -86,3 +86,23 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 }
+
+// Additional repository: GitHub Packages. Vanniktech wires Maven Central via
+// `publishToMavenCentral` above; this block adds a parallel GitHub Packages
+// target so `publishAllPublicationsToGitHubPackagesRepository` ships the same
+// artifacts there too. Credentials read from ~/.gradle/gradle.properties
+// (`gpr.user` / `gpr.key`) or env (`GITHUB_ACTOR` / `GITHUB_TOKEN`).
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/femimarket/AndroidSplash")
+            credentials {
+                username = providers.gradleProperty("gpr.user").orNull
+                    ?: System.getenv("GITHUB_ACTOR")
+                password = providers.gradleProperty("gpr.key").orNull
+                    ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
