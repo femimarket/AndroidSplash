@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
@@ -83,15 +81,12 @@ mavenPublishing {
         }
     }
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
 }
 
-// Additional repository: GitHub Packages. Vanniktech wires Maven Central via
-// `publishToMavenCentral` above; this block adds a parallel GitHub Packages
-// target so `publishAllPublicationsToGitHubPackagesRepository` ships the same
-// artifacts there too. Credentials read from ~/.gradle/gradle.properties
-// (`gpr.user` / `gpr.key`) or env (`GITHUB_ACTOR` / `GITHUB_TOKEN`).
+// Publish to GitHub Packages only. Vanniktech above gives us the publication
+// (coordinates, POM, sources/javadoc jars). This block points it at GitHub.
+// Credentials from ~/.gradle/gradle.properties (`gpr.user` / `gpr.key`) or
+// env (`GITHUB_ACTOR` / `GITHUB_TOKEN`).
 publishing {
     repositories {
         maven {
