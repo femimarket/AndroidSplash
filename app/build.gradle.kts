@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    id("com.vanniktech.maven.publish") version "0.30.0"
+    id("maven-publish")
 }
 
 android {
@@ -15,9 +15,8 @@ android {
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -26,6 +25,13 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -50,44 +56,19 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
-mavenPublishing {
-    coordinates(
-        groupId = "io.github.femimarket",
-        artifactId = "android-splash",
-        version = project.findProperty("libraryVersion") as String? ?: "1.0.0"
-    )
 
-    pom {
-        name.set("AndroidSplash")
-        description.set("A premium video splash screen library for Jetpack Compose")
-        url.set("https://github.com/femimarket/AndroidSplash")
-        licenses {
-            license {
-                name.set("MIT License")
-                url.set("https://opensource.org/licenses/MIT")
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            groupId = "io.github.femimarket"
+            artifactId = "android-splash"
+            version = project.property("libraryVersion") as String
+
+            afterEvaluate {
+                from(components["release"])
             }
-        }
-        developers {
-            developer {
-                id.set("femi")
-                name.set("Femi")
-                email.set("business@femi.market")
-            }
-        }
-        scm {
-            connection.set("scm:git:github.com/femimarket/AndroidSplash.git")
-            developerConnection.set("scm:git:ssh://github.com/femimarket/AndroidSplash.git")
-            url.set("https://github.com/femimarket/AndroidSplash/tree/main")
         }
     }
-
-}
-
-// Publish to GitHub Packages only. Vanniktech above gives us the publication
-// (coordinates, POM, sources/javadoc jars). This block points it at GitHub.
-// Credentials from ~/.gradle/gradle.properties (`gpr.user` / `gpr.key`) or
-// env (`GITHUB_ACTOR` / `GITHUB_TOKEN`).
-publishing {
     repositories {
         maven {
             name = "GitHubPackages"
